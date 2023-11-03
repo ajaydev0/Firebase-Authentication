@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../router/app_pages.dart';
 
 class SignUpController extends GetxController {
@@ -13,23 +13,18 @@ class SignUpController extends GetxController {
 
   late RxBool isLoading;
 
-  RxBool passwordVisible = true.obs;
+  RxBool passwordVisible = false.obs;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController signUpemail = TextEditingController();
-  TextEditingController signUppass = TextEditingController();
-  @override
-  void onClose() {
-    signUpemail.dispose();
-    signUppass.dispose();
-    super.onClose();
-  }
+  late final TextEditingController signUpemail = TextEditingController();
+  late final TextEditingController signUppass = TextEditingController();
+  late final TextEditingController confirmPass = TextEditingController();
 
   // Validation Email  TextFormFeild
   validateEmail(value) {
     if (value == null || value.trim().isEmpty) {
       return " Required";
     }
-    if (!value.trim().contains("@gmail.com") && !value.trim().contains(".")) {
+    if (!value.trim().contains("@gmail.com")) {
       return "Email is not valid";
     }
     return null;
@@ -38,22 +33,43 @@ class SignUpController extends GetxController {
   // Validation Password TextFormFeild
   validatePass(value) {
     if (value == null || value.trim().isEmpty) {
-      return " Requied";
+      return " Required";
+    } else if (value.trim().toString().length < 6) {
+      return " Requied 6 character";
     }
 
     return null;
   }
-//
 
-  Future<void> signUpCLick() async {
-    Future.delayed(const Duration(seconds: 2));
-    FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: signUpemail.text, password: signUppass.text)
-        .then((value) {
-      isLoading = false.obs;
-      Get.offAllNamed(Routes.signInPage);
-      Get.snackbar("Success", "User Added SuccessFul");
-    });
+  // Validation confirm Password TextFormFeild
+  validateConfirmPass(value) {
+    if (value == null || value.trim().isEmpty) return " Required";
+    if (value != signUppass.text) return "Password not match";
+    return null;
+  }
+
+  signUpCLick() async {
+    if (formKey.currentState!.validate()) {
+      try {
+        isLoading.value = true;
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: signUpemail.text, password: signUppass.text);
+        if (userCredential.user != null) {
+          Get.offAllNamed(Routes.signInPage);
+          Get.snackbar("Success", "User Added SuccessFul",
+              backgroundColor: Colors.white.withOpacity(.5));
+        }
+        isLoading.value = false;
+      } on FirebaseAuthException catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+        Get.snackbar(
+            "Error", "User already have an Account ! \nTry another Email",
+            backgroundColor: Colors.white.withOpacity(.5));
+        isLoading.value = false;
+      }
+    }
   }
 }
