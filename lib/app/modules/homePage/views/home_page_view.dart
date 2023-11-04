@@ -9,101 +9,89 @@ class HomePageView extends GetView<HomePageController> {
   Widget build(BuildContext context) {
     Get.put(HomePageController());
     return Scaffold(
+        floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: const Color.fromRGBO(143, 148, 251, .6),
+            onPressed: () => controller.addTodoClick(),
+            label: const Text(
+              "Add Todo",
+              style: TextStyle(color: Colors.white),
+            )),
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(143, 148, 251, .6),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: IconButton(
+                  onPressed: () {
+                    logOutBox(context);
+                  },
+                  icon: const Icon(Icons.logout)),
+            )
+          ],
+          title: const Text("HomePage"),
+        ),
         backgroundColor: Colors.white.withOpacity(.95),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 400,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/background.png'),
-                        fit: BoxFit.fill)),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 30,
-                      width: 80,
-                      height: 200,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage('assets/light-1.png'))),
-                      ),
-                    ),
-                    Positioned(
-                      left: 140,
-                      width: 80,
-                      height: 150,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage('assets/light-2.png'))),
-                      ),
-                    ),
-                    Positioned(
-                      right: 40,
-                      top: 40,
-                      width: 80,
-                      height: 150,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage('assets/clock.png'))),
-                      ),
-                    ),
-                    Positioned(
-                        child: Container(
-                      margin: const EdgeInsets.only(top: 90),
-                      child: const Center(
-                        child: Text(
-                          "HomePage",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )),
-                  ],
+        body: Obx(() => controller.isEmpty.value
+            ? const Center(
+                child: Text(
+                  "No Items Here",
+                  style: TextStyle(fontSize: 25),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    InkWell(
-                      splashColor: Colors.black,
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: () {
-                        logOutBox(context);
-                      },
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: const LinearGradient(colors: [
-                              Color.fromRGBO(143, 148, 251, 1),
-                              Color.fromRGBO(143, 148, 251, .6),
-                            ])),
-                        child: const Center(
-                          child: Text(
-                            "LogOut",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(left: 10, right: 10, top: 0),
+                      child: Card(
+                        child: ListTile(
+                          onTap: () {},
+                          leading: CircleAvatar(
+                              backgroundColor:
+                                  const Color.fromRGBO(143, 148, 251, .6),
+                              child: Text(
+                                "${index + 1}",
+                                style: TextStyle(color: Colors.white),
+                              )),
+                          title: const Text(
+                            "title",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: const Text(
+                            "description",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: PopupMenuButton(
+                            onSelected: (value) {
+                              if (value == "Edit") {
+                                //Open Edit Page
+                              } else if (value == "Delete") {
+                                //Delete And Remove this Item
+                              }
+                            },
+                            itemBuilder: (context) {
+                              return [
+                                const PopupMenuItem(
+                                  value: "Edit",
+                                  child: Text("Edit"),
+                                ),
+                                const PopupMenuItem(
+                                  value: "Delete",
+                                  child: Text("Delete"),
+                                ),
+                              ];
+                            },
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
-            ],
-          ),
-        ));
+              )));
   }
 }

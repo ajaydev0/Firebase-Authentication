@@ -80,8 +80,6 @@ class SignInView extends GetView<SignInController> {
                           ? Lottie.asset(
                               "assets/lottie/loading.json",
                               height: 120,
-                              // reverse: true,
-                              // fit: BoxFit.cover,
                             )
                           : Container(
                               padding: const EdgeInsets.all(5),
@@ -168,7 +166,10 @@ class SignInView extends GetView<SignInController> {
                       InkWell(
                         splashColor: Colors.black,
                         borderRadius: BorderRadius.circular(10),
-                        onTap: () => controller.logInClick(),
+                        onTap: () {
+                          // Get.offAllNamed(Routes.homePage);
+                          controller.logInClick();
+                        },
                         child: Obx(
                           () => Container(
                             height: 50,
